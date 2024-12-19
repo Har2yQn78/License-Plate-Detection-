@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>License Plate Detection</title>
+    {% load static %}
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'detection/style.css' %}">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>License Plate Detection</h1>
+        </header>
+        <main>
+            <form method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="file-input">
+                    <label for="image">Choose an image to upload:</label>
+                    <input type="file" name="image" id="image" accept="image/*">
+                </div>
+                <button type="submit">Upload and Process</button>
+            </form>
+            {% if image_path %}
+            <div class="results">
+                <h2>Original Image:</h2>
+                <img src="{{ MEDIA_URL }}{{ image_path }}" alt="Uploaded Image">
+                <h2>Processed Image:</h2>
+                <img src="{{ processed_image_url }}" alt="Processed Image">
+                <h2>Detected Plates:</h2>
+                <ul>
+                    {% for result in results %}
+                    <li>{{ result }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+            {% endif %}
+        </main>
+        <footer>
+            <p>&copy; 2024 License Plate Detection. All rights reserved.</p>
+        </footer>
+    </div>
+</body>
+</html>

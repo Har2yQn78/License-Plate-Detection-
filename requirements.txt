@@ -1,0 +1,10 @@
+Django
+opencv-python
+easyocr
+numpy
+Pillow
+torch
+torchvision
+pandas
+numpy
+
