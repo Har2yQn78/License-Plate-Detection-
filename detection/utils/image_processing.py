@@ -19,13 +19,14 @@ def process_image(image_path):
     image = cv2.imread(image_path)
     if image is None:
         print("Error: Could not read the image.")
-        return
+        return [], None, []
 
     display_image = image.copy()
     gray_image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
     detections = read_license_plate(gray_image)
 
     results = []
+    cropped_plates = []
 
     for bbox, text, score in detections:
         formatted_text = format_license(text)
@@ -35,10 +36,15 @@ def process_image(image_path):
         draw_bboxes(display_image, [bbox], (255, 0, 0))
 
         results.append({
-            'bbox': bbox,
-            'text': formatted_text,
-            'score': score,
-            'is_compliant': is_compliant
+            'characters': formatted_text,
+            'confidence': score
         })
 
-    return results, display_image
+        # Crop the license plate from the image
+        bbox_coords = np.array(bbox).reshape(-1, 2).astype(int)
+        x1, y1 = bbox_coords.min(axis=0)
+        x2, y2 = bbox_coords.max(axis=0)
+        cropped_plate = image[y1:y2, x1:x2]
+        cropped_plates.append(cropped_plate)
+
+    return results, display_image, cropped_plates

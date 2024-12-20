@@ -1,18 +1,10 @@
 import easyocr
 
-# Initialize the OCR reader for Persian (Farsi)
 reader = easyocr.Reader(['en'], gpu=False)
 
 # Mapping dictionaries for character conversion
 CHAR_TO_INT_MAP = {'O': '0', 'I': '1', 'J': '3', 'A': '4', 'G': '6', 'S': '5'}
 INT_TO_CHAR_MAP = {'0': 'O', '1': 'I', '3': 'J', '4': 'A', '6': 'G', '5': 'S'}
-
-# Mapping for Persian (Farsi) numbers
-PERSIAN_CHAR_TO_INT_MAP = {
-    '۰': '0', '۱': '1', '۲': '2', '۳': '3', '۴': '4',
-    '۵': '5', '۶': '6', '۷': '7', '۸': '8', '۹': '9'
-}
-PERSIAN_INT_TO_CHAR_MAP = {v: k for k, v in PERSIAN_CHAR_TO_INT_MAP.items()}
 
 
 def write_csv(results, output_path):
@@ -37,14 +29,11 @@ def write_csv(results, output_path):
 
 
 def license_complies_format(text):
-    """Check if the license plate text complies with the required format for Iranian plates."""
-    # Format: '11 X 111 22'
-    if len(text) != 9:
+    """Check if the license plate text complies with the required format for common plates."""
+    # Format: 'ABC 1234'
+    if len(text) != 8:
         return False
-    if not (text[0:2].isdigit() and
-            text[2].isalpha() and
-            text[3:6].isdigit() and
-            text[6:9].isdigit()):
+    if not (text[0:3].isalpha() and text[3] == ' ' and text[4:8].isdigit()):
         return False
     return True
 
@@ -52,9 +41,7 @@ def license_complies_format(text):
 def format_license(text):
     """Format the license plate text by converting characters using the mapping dictionaries."""
     formatted_text = ''.join(
-        INT_TO_CHAR_MAP.get(PERSIAN_CHAR_TO_INT_MAP.get(ch, ch),
-                            CHAR_TO_INT_MAP.get(ch, ch))
-        for ch in text
+        CHAR_TO_INT_MAP.get(ch, ch) for ch in text
     )
     return formatted_text
 
